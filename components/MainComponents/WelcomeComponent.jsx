@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View,Image } from 'react-native';
+import { StyleSheet, Text, View,Image,TouchableOpacity } from 'react-native';
 import styled from 'styled-components';
+import { useNavigation } from "@react-navigation/native";
 
-const WelcomeDiv = styled.View`
+const WelcomeDiv = styled.TouchableOpacity`
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -22,8 +23,12 @@ const WelcomeTextDiv = styled.View`
 `;
 
 function WelcomeComponent() {
+    const navigation = useNavigation();
+
     return (
-        <WelcomeDiv>
+        <WelcomeDiv
+            onPress={()=>navigation.navigate('Profile')}
+        >
             <AvatarImage source={require('../../assets/avatarka.png')}/>
             <WelcomeTextDiv>
                 <Text 

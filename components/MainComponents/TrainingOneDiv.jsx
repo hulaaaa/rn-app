@@ -17,7 +17,7 @@ const TrainingImage = styled.Image`
     width: 100%;
     height: 100%;
     border-radius: 17px;
-    backgroundColor: '#000000';
+    
     opacity: 0.5;
 `
 const TextTrainDiv = styled.View`

@@ -1,9 +1,10 @@
 import { SafeAreaView, View } from 'react-native';
 import styled from 'styled-components/native';  
-import AppLoading from 'expo-app-loading';
+import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from "expo-font";
 import { Asset } from 'expo-asset';
 import { Navigation } from './screens/Navigation';
+import { useEffect, useState } from 'react';
 
 const Container = styled.View`
   flex: 1;
@@ -34,13 +35,24 @@ const loadImages = () => {
 
 export default App = () => {
   let [fontsLoaded] = loadFonts();
-  if (!fontsLoaded) {
-    return (
-      <AppLoading/>
-    )
-  }
-  const loadAssets = async () => await Promise.all([...loadImages()]);
-  loadAssets();
+  const [isSplashReady, setSplashReady] = useState(false);
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        await SplashScreen.preventAutoHideAsync();
+        await Promise.all([...loadImages()]);
+        setSplashReady(true);
+        SplashScreen.hideAsync();
+      } catch (e) {
+        console.warn(e);
+      }
+    };
+
+    init();
+  }, []);
+
+  if (!fontsLoaded || !isSplashReady) return null;
 
   return (
     <Container>
