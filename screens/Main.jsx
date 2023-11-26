@@ -1,4 +1,6 @@
 import { StyleSheet, Text, View,Image, ScrollView } from 'react-native';
+import { Button, Input } from 'react-native-elements'
+
 import styled from 'styled-components';
 import WelcomeComponent from '../components/MainComponents/WelcomeComponent';
 import StatShortComponent from '../components/MainComponents/StatShortComponent';
@@ -6,6 +8,9 @@ import TrainingStat from '../components/MainComponents/TrainingStat';
 import MuslceTraining from '../components/MainComponents/MuslceTraining';
 import {useRoute} from "@react-navigation/native"
 import Nav from '../components/MainComponents/Nav';
+import { supabase } from '../lib/supabase'
+
+
 const Main = styled.View`
   padding: 5px 15px 0 15px;
   backgroundColor: #1D2228;
@@ -23,9 +28,13 @@ function MainScreen() {
                     showsHorizontalScrollIndicator={false}
                 >
                     <WelcomeComponent/>
+                    <View >
+                        <Button title="Sign Out" onPress={() => supabase.auth.signOut()} />
+                    </View>
                     <StatShortComponent/>
                     <TrainingStat/>
                     <MuslceTraining/>
+
                 </ScrollView>
             </Main>
             <Nav routeName={routeName}/> 

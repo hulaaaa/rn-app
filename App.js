@@ -10,6 +10,7 @@ import { Asset } from 'expo-asset';
 import { SplashScreen } from 'expo-splash-screen'; // Змінено імпорт
 import AppLoading from 'expo-app-loading';
 import * as Font from 'expo-font';
+import MainScreen from './screens/Main';
 
 const Container = styled.View`
   flex: 1;
@@ -93,7 +94,7 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           {session ? (
-            <Stack.Screen name="Account" component={Account} />
+            <Stack.Screen name="Main" component={MainScreen} />
           ) : (
             <>
               <Stack.Screen name="Welcome" component={Welcome} />
