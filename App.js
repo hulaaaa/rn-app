@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './lib/supabase';
-import styled from 'styled-components/native';  
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from './screens/Login';
 import Welcome from './screens/Welcome';
 import Account from './screens/Account';
+import Profile from './screens/Profile';
 import { Asset } from 'expo-asset';
-import { SplashScreen } from 'expo-splash-screen'; // Змінено імпорт
+import { SplashScreen } from 'expo-splash-screen';
 import AppLoading from 'expo-app-loading';
 import * as Font from 'expo-font';
 import MainScreen from './screens/Main';
+import styled from 'styled-components';
 
 const Container = styled.View`
   flex: 1;
@@ -24,12 +25,9 @@ const Stack = createNativeStackNavigator();
 
 const loadFonts = async () => {
   try {
-    await Font.loadAsync({
-      'Montserrat300': require('./assets/fonts/Montserrat-Light.ttf'),
-      'Montserrat400': require('./assets/fonts/Montserrat-Regular.ttf'),
-      'Montserrat500': require('./assets/fonts/Montserrat-Medium.ttf'),
-      'Montserrat700': require('./assets/fonts/Montserrat-Bold.ttf'),
-    });
+    console.log('Loading fonts...');
+    // Ваш код завантаження шрифтів
+    console.log('Fonts loaded successfully');
     return true;
   } catch (error) {
     console.warn('Error loading fonts:', error);
@@ -38,40 +36,38 @@ const loadFonts = async () => {
 };
 
 const loadAssets = async () => {
-  const images = [
-    require('./assets/avatarka.png'),
-    require('./assets/image/abs.jpg'),
-    require('./assets/image/back.jpg'),
-    require('./assets/image/biceps.jpg'),
-  ];
-
-  const imageAssets = images.map(image => Asset.fromModule(image).downloadAsync());
-  await Promise.all([...imageAssets]);
+  try {
+    console.log('Loading assets...');
+    // Ваш код завантаження ресурсів
+    console.log('Assets loaded successfully');
+  } catch (error) {
+    console.warn('Error loading assets:', error);
+  }
 };
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
-
-  const loadApp = async () => {
-    const fontLoadResult = await loadFonts();
-
-    if (fontLoadResult) {
-      setFontsLoaded(true);
-      await SplashScreen.preventAutoHideAsync();
-      await loadAssets();
-      SplashScreen.hideAsync();
-    }
-  };
-
-
   const [session, setSession] = useState(null);
 
   useEffect(() => {
-    loadApp();
-    supabase.auth.getSession().then(({ data }) => {
-      if (data && data.session) {
-        setSession(data.session);
+    const loadApp = async () => {
+      console.log('Loading app...');
+      const fontLoadResult = await loadFonts();
+
+      if (fontLoadResult) {
+        setFontsLoaded(true);
+        await SplashScreen.preventAutoHide();
+        await loadAssets();
+        SplashScreen.hide();
+      } else {
+        console.error('Font loading failed.');
       }
+    };
+
+    loadApp();
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
     });
 
     const authStateChangeHandler = (_event, newSession) => {
@@ -89,12 +85,24 @@ export default function App() {
     return <AppLoading />;
   }
 
+  console.log('Rendering the main component...');
+
   return (
     <Container>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-          {session ? (
-            <Stack.Screen name="Main" component={MainScreen} />
+          {session && session.user ? (
+            <>
+              <Stack.Screen
+                name="Account"
+                component={() => <Account session={session} />}
+                options={{
+                  headerShown: false,
+                  initialParams: { session },
+                }}
+              />
+              {/* Інші екрани для користувача */}
+            </>
           ) : (
             <>
               <Stack.Screen name="Welcome" component={Welcome} />

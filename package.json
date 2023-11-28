@@ -17,7 +17,6 @@
     "@react-navigation/native-stack": "^6.9.17",
     "@supabase/supabase-js": "^2.38.5",
     "expo": "^49.0.21",
-    "expo-app-loading": "^2.1.1",
     "expo-asset": "^8.10.1",
     "expo-blur": "~12.4.1",
     "expo-dev-client": "~2.4.12",

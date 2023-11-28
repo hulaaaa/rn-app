@@ -69,7 +69,7 @@ function Login() {
         if (error) Alert.alert(error.message)
         setLoading(false)
         if (!error) {
-            navigation.navigate('Main');
+            navigation.navigate('Account');
         }
     }
     
@@ -97,7 +97,7 @@ function Login() {
         }}>
             Login
         </Text>
-        
+
         <InputsDiv>
             <LoginDiv>
                 <TextLoginInp
