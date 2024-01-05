@@ -31,12 +31,12 @@ const EmailText = styled.Text`
   font-size: ${RFValue(10)}px;
 `;
 
-function PhotoProfile() {
+function PhotoProfile({session,name,lname}) {
   return (
     <Container>
       <AvatarImage source={require('../../assets/avatarka.png')} />
-      <NameText>Dmytro Hula</NameText>
-      <EmailText>huladm@icloud.com</EmailText>
+      <NameText>{name} {lname}</NameText>
+      <EmailText>{session?.user?.email}</EmailText>
     </Container>
   )
 }

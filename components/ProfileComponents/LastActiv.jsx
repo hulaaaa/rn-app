@@ -117,17 +117,6 @@ function LastActiv() {
               ))
             }
         </TextiAct>
-        <TextMore>
-          <Text
-              style={{
-                  fontSize: 12,
-                  fontFamily: "Montserrat500",
-                  color: "rgba(240, 240, 240, 0.40)"
-              }}
-          >
-            Training more...
-          </Text>
-        </TextMore>
     </Container>
   )
 }

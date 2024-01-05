@@ -4,14 +4,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from './screens/Login';
 import Welcome from './screens/Welcome';
-import Account from './screens/Account';
 import Profile from './screens/Profile';
+import Register from './screens/Register';
 import { Asset } from 'expo-asset';
 import { SplashScreen } from 'expo-splash-screen';
 import AppLoading from 'expo-app-loading';
 import * as Font from 'expo-font';
 import MainScreen from './screens/Main';
 import styled from 'styled-components';
+import Reg_info from './screens/Reg_info';
 
 const Container = styled.View`
   flex: 1;
@@ -25,9 +26,12 @@ const Stack = createNativeStackNavigator();
 
 const loadFonts = async () => {
   try {
-    console.log('Loading fonts...');
-    // Ваш код завантаження шрифтів
-    console.log('Fonts loaded successfully');
+    await Font.loadAsync({
+      'Montserrat300': require('./assets/fonts/Montserrat-Light.ttf'),
+      'Montserrat400': require('./assets/fonts/Montserrat-Regular.ttf'),
+      'Montserrat500': require('./assets/fonts/Montserrat-Medium.ttf'),
+      'Montserrat700': require('./assets/fonts/Montserrat-Bold.ttf')
+    });
     return true;
   } catch (error) {
     console.warn('Error loading fonts:', error);
@@ -35,15 +39,22 @@ const loadFonts = async () => {
   }
 };
 
+
 const loadAssets = async () => {
   try {
-    console.log('Loading assets...');
-    // Ваш код завантаження ресурсів
-    console.log('Assets loaded successfully');
+    const imageAssets = [
+      require('/assets/avatarka.png'),
+      require('./assets/image/abs.jpg'),
+      require('./assets/image/back.jpg'),
+      require('./assets/image/biceps.jpg')
+    ];
+    const assetPromises = imageAssets.map((image) => Asset.fromModule(image).downloadAsync());
+    await Promise.all(assetPromises);
   } catch (error) {
     console.warn('Error loading assets:', error);
   }
 };
+
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -85,28 +96,42 @@ export default function App() {
     return <AppLoading />;
   }
 
-  console.log('Rendering the main component...');
-
   return (
     <Container>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Navigator screenOptions={{ headerShown: false, }}>
           {session && session.user ? (
             <>
               <Stack.Screen
-                name="Account"
-                component={() => <Account session={session} />}
+                name="Reginfo"
+                component={() => <Reg_info key={session.user.id} session={session}/>}
                 options={{
                   headerShown: false,
                   initialParams: { session },
                 }}
-              />
-              {/* Інші екрани для користувача */}
+              /> 
+              <Stack.Screen
+                name="Profile"
+                component={() => <Profile key={session.user.id} session={session}/>}
+                options={{
+                  headerShown: false,
+                  initialParams: { session },
+                }}
+              /> 
+              <Stack.Screen
+                name="Main"
+                component={() => <MainScreen key={session.user.id} session={session}/>}
+                options={{
+                  headerShown: false,
+                  initialParams: { session },
+                }}
+              /> 
             </>
           ) : (
             <>
               <Stack.Screen name="Welcome" component={Welcome} />
               <Stack.Screen name="Login" component={Login} />
+              <Stack.Screen name="Register" component={Register}/>
             </>
           )}
         </Stack.Navigator>

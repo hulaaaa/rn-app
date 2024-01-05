@@ -13,53 +13,54 @@ const Container = styled.View`
 const InputsDiv = styled.View`
     display: flex;
     width: 100%;
+    gap: 15px;
     flex-direction: column;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 30px;
+    
 `
 const LoginDiv = styled.View`
     display: flex;
     width: 100%;
     flex-direction: column;
     align-items: center;
+    padding: 0;
+    margin: 0;
 `
 const TextLoginInp = styled.TextInput`
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 20px;
-    border: 1px solid #2A2E37;
-    padding: 20px 15px;
+    
+    border: 1px solid #434C53;
+    padding: 15px 15px;
     width: 100%;
-    border-radius: 17px;
-    color: #FEFFFF;
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.8);
 `
 const TextPassInp = styled.TextInput`
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 20px;
-    border: 1px solid #2A2E37;
-    padding: 20px 15px;
+    border: 1px solid #434C53;
+    padding: 15px 15px;
     width: 100%;
-    border-radius: 17px;
-    color: #FEFFFF;
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.8);
 `
 const ButtonStart = styled.TouchableOpacity`
     width: 100%;
     padding: 23px 50px;
     background: #E0FE10;
     border-radius: 17px;
-    margin-top: 50px;
+    margin-top: 30px;
 `
 
 function Login() {
     const navigation = useNavigation();
-
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
-
     async function signInWithEmail() {
         setLoading(true)
         const { error } = await supabase.auth.signInWithPassword({
@@ -69,23 +70,8 @@ function Login() {
         if (error) Alert.alert(error.message)
         setLoading(false)
         if (!error) {
-            navigation.navigate('Account');
+            navigation.navigate('Main');
         }
-    }
-    
-    async function signUpWithEmail() {
-      setLoading(true)
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-      })
-
-      if (error) Alert.alert(error.message)
-      if (!session) Alert.alert('Please check your inbox for email verification!')
-      setLoading(false)
     }
     return (
     <Container>
@@ -93,11 +79,10 @@ function Login() {
         style={{
                 fontFamily: "Montserrat700",
                 color: "#FEFFFF",
-                fontSize: 35
+                fontSize: 30
         }}>
             Login
         </Text>
-
         <InputsDiv>
             <LoginDiv>
                 <TextLoginInp
@@ -131,20 +116,35 @@ function Login() {
                 </Text>
             </ButtonStart>
 
-            <ButtonStart 
-            disabled={loading} onPress={() => {signUpWithEmail()}} 
+            {/* textLogin */}
+            <View style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: "center"
+            }}
             >
-                <Text
+                <Text 
                 style={{
-                fontSize: 15,
-                fontFamily: "Montserrat700",
-                color: "#1D2900",
-                textAlign: "center"
-                }}
-                >
-                    SIGN Up
+                    fontFamily: "Montserrat300",
+                    color: "#E5E8ED",
+                    fontSize: 12,
+                    marginTop: 5,
+                }}>
+                    YOU DON’T HAVE AN ACCOUNT?
                 </Text>
-            </ButtonStart>
+                <TouchableOpacity onPress={()=>navigation.navigate('Register')}>
+                    <Text style={{
+                    fontFamily: "Montserrat700",
+                    color: "#E5E8ED",
+                    fontSize: 12,
+                    marginTop: 5,
+                    padding: 12,
+                    textDecorationLine: 'underline'
+                    }}>
+                        SIGN UP
+                    </Text>
+                </TouchableOpacity>
+            </View>
         </InputsDiv>
         
     </Container>

@@ -22,7 +22,7 @@ const WelcomeTextDiv = styled.View`
     alignItems: flex-start;
 `;
 
-function WelcomeComponent() {
+function WelcomeComponent({session,age,weight,height,gender,lname,fname}) {
     const navigation = useNavigation();
 
     return (
@@ -45,7 +45,7 @@ function WelcomeComponent() {
                     color: "#FEFFFF",
                     fontSize: 17
                 }}>
-                    DMYTRO HULA
+                    {fname} {lname}
                 </Text>
             </WelcomeTextDiv>
             
