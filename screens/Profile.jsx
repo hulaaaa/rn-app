@@ -9,12 +9,22 @@ import LastActiv from '../components/ProfileComponents/LastActiv';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Button, Input } from 'react-native-elements';
+
 const Main = styled.View`
   display: flex;
   flex-direction: column;
   padding: 5px 20px 0 20px;
   background-color: #1D2228; 
   height: 100%;
+`
+const ButtonSignOut = styled.TouchableOpacity`
+  padding: 12px 0px;
+  margin-top: 22px;
+  display: flex;
+  align-items: center;
+  background-color: #E0FE10;
+  border-radius: 14px;
+  weight: 100%;
 `
 
 function Profile({session}) {
@@ -69,8 +79,17 @@ function Profile({session}) {
         <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
           <PhotoProfile session={session} name={fname} lname={lname}/>
           <MiniDivInfo height={height} weight={weight}  age={age} gender={gender}/>
+          <ButtonSignOut onPress={() => supabase.auth.signOut()}>
+            <Text style={{
+                color: "black",
+                fontFamily: "Montserrat700",
+                fontSize: 17
+            }}>
+              Sign Out
+            </Text>
+          </ButtonSignOut>
           <LastActiv/>
-          <Button title="Sign Out" onPress={() => supabase.auth.signOut()} />
+          
         </ScrollView>
       </Main>
       <Nav routeName={routeName}/>

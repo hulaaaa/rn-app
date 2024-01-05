@@ -63,7 +63,7 @@ function Reg_info({ session }) {
             if (!session?.user) throw new Error('No user on the session!')
             const updates = {
                 id: session?.user.id,
-                first_name:name,
+                first_name: name,
                 last_name: lname,
                 weight,
                 height,

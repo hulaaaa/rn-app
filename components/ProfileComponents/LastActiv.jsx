@@ -9,7 +9,7 @@ const Container = styled.View`
   padding: 0;
   margin: 0;
   flex: 1;
-  margin-top: 20px;
+  margin-top: 0px;
 `
 const TextiAct = styled.View`
   display: flex;   

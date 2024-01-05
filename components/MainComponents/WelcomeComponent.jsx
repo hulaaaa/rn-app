@@ -22,7 +22,7 @@ const WelcomeTextDiv = styled.View`
     alignItems: flex-start;
 `;
 
-function WelcomeComponent({session,age,weight,height,gender,lname,fname}) {
+function WelcomeComponent({session,lname,fname}) {
     const navigation = useNavigation();
 
     return (

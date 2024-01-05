@@ -103,8 +103,8 @@ export default function App() {
           {session && session.user ? (
             <>
               <Stack.Screen
-                name="Reginfo"
-                component={() => <Reg_info key={session.user.id} session={session}/>}
+                name="Main"
+                component={() => <MainScreen key={session.user.id} session={session}/>}
                 options={{
                   headerShown: false,
                   initialParams: { session },
@@ -119,8 +119,8 @@ export default function App() {
                 }}
               /> 
               <Stack.Screen
-                name="Main"
-                component={() => <MainScreen key={session.user.id} session={session}/>}
+                name="Reginfo"
+                component={() => <Reg_info key={session.user.id} session={session}/>}
                 options={{
                   headerShown: false,
                   initialParams: { session },
