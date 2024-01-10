@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View,Image,TouchableOpacity } from 'react-native';
 import styled from 'styled-components';
 import { useNavigation } from "@react-navigation/native";
+import { supabase } from '../../lib/supabase';
+import React, { useEffect, useState } from 'react';
 
 const WelcomeDiv = styled.TouchableOpacity`
     display: flex;
@@ -24,12 +26,35 @@ const WelcomeTextDiv = styled.View`
 
 function WelcomeComponent({session,lname,fname}) {
     const navigation = useNavigation();
+    const [avatarUrl, setAvatarUrl] = useState(null);
 
+    async function getPhoto() {
+      try {
+        const { data, error } = await supabase.storage.from('avatars').download('admin1.jpeg');
+  
+        if (error) {
+          console.error('Error downloading image:', error);
+        } else {
+          const imageUrl = URL.createObjectURL(data);
+          setAvatarUrl(imageUrl);
+        }
+      } catch (error) {
+        console.error('Error loading images:', error);
+      }
+    }
+  
+    useEffect(() => {
+      getPhoto();
+    }, []);
     return (
         <WelcomeDiv
             onPress={()=>navigation.navigate('Profile')}
         >
-            <AvatarImage source={require('../../assets/avatarka.png')}/>
+            {avatarUrl ? (
+                <AvatarImage source={{ uri: avatarUrl }} />
+            ) : (
+                <AvatarImage source={require('../../assets/avatarka.png')}/>
+                )}
             <WelcomeTextDiv>
                 <Text 
                 style={{

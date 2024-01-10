@@ -13,6 +13,8 @@ import * as Font from 'expo-font';
 import MainScreen from './screens/Main';
 import styled from 'styled-components';
 import Reg_info from './screens/Reg_info';
+import { Favorite } from './screens/Favorite';
+import Allexer from './screens/Allexer';
 
 const Container = styled.View`
   flex: 1;
@@ -99,33 +101,54 @@ export default function App() {
   return (
     <Container>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false, }}>
+        <Stack.Navigator screenOptions={{headerShown: false, }}>
           {session && session.user ? (
             <>
               <Stack.Screen
                 name="Main"
-                component={() => <MainScreen key={session.user.id} session={session}/>}
                 options={{
                   headerShown: false,
                   initialParams: { session },
                 }}
-              /> 
+              >
+                {() => <MainScreen key={session.user.id} session={session}/>}
+              </Stack.Screen>
+              <Stack.Screen
+                name="Allexer"
+                options={{
+                  headerShown: false,
+                  initialParams: { session },
+                }}
+              >
+                {() => <Allexer key={session.user.id} session={session}/>}
+              </Stack.Screen>
+              <Stack.Screen
+                name="Favorite"
+                options={{
+                  headerShown: false,
+                  initialParams: { session },
+                }}
+              >
+                {() => <Favorite key={session.user.id} session={session}/>}
+              </Stack.Screen>
               <Stack.Screen
                 name="Profile"
-                component={() => <Profile key={session.user.id} session={session}/>}
                 options={{
                   headerShown: false,
                   initialParams: { session },
                 }}
-              /> 
+              >
+                {() => <Profile key={session.user.id} session={session}/>}
+              </Stack.Screen>
               <Stack.Screen
                 name="Reginfo"
-                component={() => <Reg_info key={session.user.id} session={session}/>}
                 options={{
                   headerShown: false,
                   initialParams: { session },
                 }}
-              /> 
+              >
+                {() => <Reg_info key={session.user.id} session={session}/>}
+              </Stack.Screen>
             </>
           ) : (
             <>

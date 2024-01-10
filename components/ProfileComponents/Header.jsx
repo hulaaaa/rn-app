@@ -13,29 +13,13 @@ const Container = styled.View`
   padding-bottom: 5px;
 `
 
-const SvgComponent = () => (
-    <Svg xmlns="http://www.w3.org/2000/svg" fill="none">
-      <Path
-        fill="#FCFCFC"
-        d="M20 11.25a1.25 1.25 0 1 0 0-2.5v2.5ZM1.116 9.116a1.25 1.25 0 0 0 0 1.768l7.955 7.955a1.25 1.25 0 1 0 1.768-1.768L3.768 10l7.07-7.071A1.25 1.25 0 1 0 9.072 1.16L1.116 9.116ZM20 8.75H2v2.5h18v-2.5Z"
-      />
-    </Svg>
-)
 
-function Header() {
+function Header({text}) {
   const navigation = useNavigation();
 
   return (
     <Container>
-        <TouchableOpacity
-          onPress={()=> navigation.navigate('Main')}
-          style={{
-            width: 18,
-            height: 19
-          }}
-        >
-          <SvgComponent/>
-        </TouchableOpacity>
+        <TouchableOpacity style={{width: 18,height: 19}}></TouchableOpacity>
         
         <Text 
         style={{
@@ -43,17 +27,10 @@ function Header() {
             color: "#FEFFFF",
             fontSize: 17
         }}>
-            Profile
+            {text}
         </Text>
 
-        <TouchableOpacity
-          style={{
-            width: 18,
-            height: 19
-          }}
-        >
-          
-        </TouchableOpacity>
+        <TouchableOpacity style={{width: 18,height: 19}}></TouchableOpacity>
     </Container>
   )
 }

@@ -75,7 +75,7 @@ function Profile({session}) {
   return (
     <View>
       <Main>
-      <Header/>
+      <Header text="Profile"/>
         <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
           <PhotoProfile session={session} name={fname} lname={lname}/>
           <MiniDivInfo height={height} weight={weight}  age={age} gender={gender}/>
@@ -89,7 +89,6 @@ function Profile({session}) {
             </Text>
           </ButtonSignOut>
           <LastActiv/>
-          
         </ScrollView>
       </Main>
       <Nav routeName={routeName}/>
