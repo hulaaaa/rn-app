@@ -6,8 +6,8 @@ import { BlurView } from 'expo-blur';
 import MainScreen from '../../screens/Main';
 
 const Buttonn = styled.TouchableOpacity`
-    width: fit-content;
-    height: fit-content;
+    width: auto;
+    height: auto;
     justify-content: center;
     align-items: center;
     border-radius: 5px;
@@ -97,7 +97,7 @@ function Nav ({routeName}){
 const styles = StyleSheet.create({
     blurContainer: {
         width: "100%",
-        height: "fit-content",
+        height: "auto",
         position: "absolute",
         bottom: 0,
         left: 0,

@@ -4,7 +4,11 @@ import { supabase } from '../lib/supabase'
 import { SafeAreaView, Text, Image, View,Alert, TextInput,TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 import { RulerPicker } from 'react-native-ruler-picker';
-import { ButtonGroup } from '@rneui/themed';
+import { launchImageLibrary} from 'react-native-image-picker';
+
+import { Button } from "react-native-elements/dist/buttons/Button";
+import { ButtonGroup } from "@rneui/themed/dist/ButtonGroup";
+
 
 const Container = styled.View`
   padding: 20px;
@@ -48,31 +52,44 @@ function Reg_info({ session }) {
     const [weight, setWeight] = useState(0);
     const [height, setHeight] = useState(0);
     const [gender, setGender] = useState(0);
-    
+
+    const [avatarUrl, setAvatarUrl] = useState('');
+
     const [loading, setLoading] = useState(false);
-    // Function Update
+
     async function updateProfile({
         name,
         lname,
         weight,
         height,
         gender,
-      }) {
+    }) {
         try {
-            setLoading(true)
+            setLoading(true);
             if (!session?.user) throw new Error('No user on the session!')
             const updates = {
                 id: session?.user.id,
                 first_name: name,
                 last_name: lname,
+                date_joined: new Date(),
+                is_superuser: false,
+                password: "",
+                is_staff: true,
+                is_active: true,
+                email: null
+            }
+            const { error } = await supabase.from('users_user').upsert(updates);
+            if (error) throw error;
+            console.log('Profile updated successfully!');
+    
+            // Тепер викличте функцію, яка записує дані у таблицю users_profile
+            await updateProfileDetails({
+                user_id: updates.id,
                 weight,
                 height,
                 gender,
-                updated_at: new Date(),
-            }
-            const { error } = await supabase.from('profiles').upsert(updates);
-            if (error) {throw error;}
-            console.log('Profile updated successfully!');
+            });
+    
             navigation.navigate('Main');
         } catch (error) {
             console.error('Error updating profile:', error.message);
@@ -81,10 +98,36 @@ function Reg_info({ session }) {
             setLoading(false);
         }
     }
+    
+    async function updateProfileDetails({
+        user_id,
+        weight,
+        height,
+        gender,
+    }) {
+        try {
+            const { data, error } = await supabase
+                .from('users_profile')
+                .upsert([
+                    {
+                        user_id: user_id,
+                        weight: weight,
+                        height: height,
+                        gender: gender,
+                    }
+                ]);
+    
+            if (error) throw error;
+    
+            console.log('Profile details updated successfully!');
+        } catch (error) {
+            console.error('Error updating profile details:', error.message);
+            Alert.alert('Error updating profile details');
+        }
+    }
 
     return (
         <Container>
-
             <Text 
                 style={{
                     fontFamily: "Montserrat700",
@@ -132,7 +175,7 @@ function Reg_info({ session }) {
             {/* Select Gender */}
             <View style={{
                 width: "100%",
-                height: "fit-content",
+                height: "auto",
                 margin: "50px 0"
             }}
             >
@@ -247,7 +290,9 @@ function Reg_info({ session }) {
                 unit="cm"
                 onValueChangeEnd={(number) => setHeight(number)}
             />
-
+            <View>
+                <Button>Load</Button>
+            </View>
 
             {/* Finish Button */}
             <ButtonStart disabled={loading} onPress={() => updateProfile({name, lname,weight,height,gender})}>

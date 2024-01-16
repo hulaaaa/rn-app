@@ -13,7 +13,7 @@ import { Button, Input } from 'react-native-elements';
 const Main = styled.View`
   display: flex;
   flex-direction: column;
-  padding: 5px 20px 0 20px;
+  padding: 5px 20px;
   background-color: #1D2228; 
   height: 100%;
 `
@@ -47,8 +47,8 @@ function Profile({session}) {
       setLoading(true);
       if (!session?.user) throw new Error('No user on the session!');
       const { data, error, status } = await supabase
-          .from('profiles')
-          .select(`age, gender, weight, height, first_name, last_name`)
+          .from('users_user')
+          .select(`first_name, last_name`)
           .eq('id', session?.user.id)
           .single();
       if (error && status !== 406) {
@@ -57,10 +57,10 @@ function Profile({session}) {
       if (data) {
           setFname(data.first_name)
           setLname(data.last_name)
-          setGender(data.gender);
-          setAge(data.age);
-          setWeight(data.weight);
-          setHeight(data.height);
+          setGender(null);
+          setAge(null);
+          setWeight(null);
+          setHeight(null);
       }
       } catch (error) {
       if (error instanceof Error) {

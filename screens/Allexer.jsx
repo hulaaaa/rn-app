@@ -12,7 +12,7 @@ import FavExercise from '../components/FavComponents/FavExercise';
 const Main = styled.View`
   display: flex;
   flex-direction: column;
-  padding: 5px 20px 0 20px;
+  padding: 5px 20px;
   background-color: #1D2228; 
   height: 100%;
 `

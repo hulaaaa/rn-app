@@ -68,7 +68,7 @@ function FavExercise({image,title,reps}) {
         {
         imagesLoaded ? (
             <Container>
-                <View style={{display:"flex",flexDirection: "row",alignItems: "center",gap: "20px",}}>
+                <View style={{display:"flex",flexDirection: "row",alignItems: "center",gap: "20",}}>
                 {image === "biceps" && <TrainingImage source={{ uri: imageUrl }} />}
                 {image === "back" && <TrainingImage source={{ uri: imageUrl }} />}
                 {image === "abs" && <TrainingImage source={{ uri: imageUrl }} />}

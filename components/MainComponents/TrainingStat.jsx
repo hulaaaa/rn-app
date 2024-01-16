@@ -8,7 +8,7 @@ const Container = styled.View`
     justify-content: space-between;
     padding: 20px;
     width: 100%;
-    height: fit-content;
+    height: auto;
     border-radius: 17px;
     background: #2A2E37;
     margin-top: 1.5%;

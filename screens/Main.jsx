@@ -15,7 +15,7 @@ import { useEffect, useState } from 'react';
 const Main = styled.View`
   padding: 5px 15px 0 15px;
   backgroundColor: #1D2228;
-  height: fit-content;
+  height: auto;
 `
 
 function MainScreen({session}) {
@@ -39,8 +39,8 @@ function MainScreen({session}) {
         if (!session?.user) throw new Error('No user on the session!');
 
         const { data, error, status } = await supabase
-            .from('profiles')
-            .select(`first_name, last_name, all_kcal, fav_exercise, all_trainings`)
+            .from('users_user')
+            .select(`first_name, last_name`)
             .eq('id', session?.user.id)
             .single();
         if (error && status !== 406) {
@@ -50,9 +50,9 @@ function MainScreen({session}) {
         if (data) {
             setFname(data.first_name)
             setLname(data.last_name)
-            setKcal(data.all_kcal)
-            setFavex(data.fav_exercise)
-            setAllTrain(data.all_trainings)
+            setKcal(null)
+            setFavex(null)
+            setAllTrain(null)
         }
         } catch (error) {
         if (error instanceof Error) {

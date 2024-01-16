@@ -9,7 +9,7 @@ const Container = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  height: fit-content;
+  height: auto;
   padding-bottom: 5px;
 `
 

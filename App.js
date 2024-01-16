@@ -15,6 +15,9 @@ import styled from 'styled-components';
 import Reg_info from './screens/Reg_info';
 import { Favorite } from './screens/Favorite';
 import Allexer from './screens/Allexer';
+import SelTrein from './screens/SelTrein';
+import PreStart from './components/AllexerComponents/PreStart';
+import TrainingNow from './screens/TrainingNow';
 
 const Container = styled.View`
   flex: 1;
@@ -113,6 +116,7 @@ export default function App() {
               >
                 {() => <MainScreen key={session.user.id} session={session}/>}
               </Stack.Screen>
+
               <Stack.Screen
                 name="Allexer"
                 options={{
@@ -122,6 +126,27 @@ export default function App() {
               >
                 {() => <Allexer key={session.user.id} session={session}/>}
               </Stack.Screen>
+
+              <Stack.Screen
+                name="SelTrein"
+                options={{
+                  headerShown: false,
+                  initialParams: { session },
+                }}
+              >
+                {() => <SelTrein key={session.user.id} session={session}/>}
+              </Stack.Screen>
+
+              <Stack.Screen
+                name="PreStart"
+                options={{
+                  headerShown: false,
+                  initialParams: { session },
+                }}
+              >
+                {() => <PreStart key={session.user.id} session={session}/>}
+              </Stack.Screen>
+              
               <Stack.Screen
                 name="Favorite"
                 options={{
@@ -131,6 +156,7 @@ export default function App() {
               >
                 {() => <Favorite key={session.user.id} session={session}/>}
               </Stack.Screen>
+
               <Stack.Screen
                 name="Profile"
                 options={{
@@ -140,6 +166,17 @@ export default function App() {
               >
                 {() => <Profile key={session.user.id} session={session}/>}
               </Stack.Screen>
+
+              <Stack.Screen
+                name="TrainingNow"
+                options={{
+                  headerShown: false,
+                  initialParams: { session },
+                }}
+              >
+                {() => <TrainingNow key={session.user.id} session={session}/>}
+              </Stack.Screen>
+              
               <Stack.Screen
                 name="Reginfo"
                 options={{

@@ -16,7 +16,11 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.hulaaaa.rnapp"
+      "bundleIdentifier": "com.hulaaaa.rnapp",
+      "infoPlist": {
+        "NSCameraUsageDescription": "We need access to your camera for some feature.",
+        "NSPhotoLibraryUsageDescription": "We need access to your photo library for some feature."
+      }
     },
     "android": {
       "adaptiveIcon": {
