@@ -39,9 +39,8 @@ function TrainingOneDiv({text,time}) {
     
   return (
     <TrainingOneContainer>
-        {text === "BICEPS" && <TrainingImage source={require(`../../assets/image/biceps.jpg`)}/>}
-        {text === "BACK" && <TrainingImage source={require(`../../assets/image/back.jpg`)}/>}
-        {text === "ABS" && <TrainingImage source={require(`../../assets/image/abs.jpg`)}/>}
+        {text === "Yoga" && <TrainingImage source={{uri: "https://waotqiccymmikmwadsdl.supabase.co/storage/v1/object/public/img_exer/Yoga/Crow_Pose%20.jpeg"}}/>}
+        {text === "Gym" && <TrainingImage source={{uri: "https://waotqiccymmikmwadsdl.supabase.co/storage/v1/object/public/img_exer/Gym/Dumbbell_Lunges.jpeg"}}/>}
         <TextTrainDiv>
             <View
             style={{

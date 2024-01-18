@@ -1,8 +1,9 @@
-import { StyleSheet, Text, View,Image, ScrollView } from 'react-native';
+import { StyleSheet, Text, View,Image, ScrollView,TouchableOpacity } from 'react-native';
 import styled from "styled-components"
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import Svg, { Rect, Path } from "react-native-svg"
 import TrainingOneDiv from './TrainingOneDiv';
+import { useNavigation } from "@react-navigation/native";
 
 const Container = styled.View`
     display: flex;
@@ -33,17 +34,15 @@ function MuslceTraining() {
     const trainingArr = [
         {
             time: "5-8",
-            text: "BICEPS",
+            text: "Yoga",
         },
         {
             time: "9-12",
-            text: "BACK",
-        },
-        {
-            time: "13-18",
-            text: "ABS",
+            text: "Gym",
         },
     ]
+    const navigation = useNavigation();
+
     return (
         <Container>
             <TextDiv>
@@ -56,6 +55,7 @@ function MuslceTraining() {
                     MUSCLE TRAINING
                 </Text>
                 <Text 
+                onPress={()=>{navigation.navigate("Favorite")}}
                 style={{
                     fontFamily: "Montserrat300",
                     color: "#A5A8AD",
@@ -71,7 +71,6 @@ function MuslceTraining() {
                                 key={index} 
                                 time={item.time} 
                                 text={item.text} 
-                                img={item.img}
                             />
                         )
                     )

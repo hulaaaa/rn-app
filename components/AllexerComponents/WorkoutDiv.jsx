@@ -48,7 +48,7 @@ function WorkoutDiv({ onPress, text, img, numWork }) {
         <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <Text style={{ color: '#E0FE10', fontFamily: 'Montserrat700', fontSize: 27 }}>{text}</Text>
           <Text style={{ color: 'rgba(255, 255, 255, 0.80)', fontFamily: 'Montserrat300', fontSize: 12 }}>
-            {numWork} WORKOUTS
+            {numWork.length} WORKOUTS
           </Text>
         </View>
       </View>

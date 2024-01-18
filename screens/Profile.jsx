@@ -39,7 +39,10 @@ function Profile({session}) {
   const [weight, setWeight] = useState('');
   const [height, setHeight] = useState('');
   useEffect(() => {
-      if (session) getProfile();
+      if (session) {
+        getProfile();
+
+      }
   }, [session]);
 
   async function getProfile() {
@@ -47,8 +50,8 @@ function Profile({session}) {
       setLoading(true);
       if (!session?.user) throw new Error('No user on the session!');
       const { data, error, status } = await supabase
-          .from('users_user')
-          .select(`first_name, last_name`)
+          .from('users_user, users_profile')
+          .select(`first_name, last_name,gender, weight, height`)
           .eq('id', session?.user.id)
           .single();
       if (error && status !== 406) {
@@ -57,16 +60,16 @@ function Profile({session}) {
       if (data) {
           setFname(data.first_name)
           setLname(data.last_name)
-          setGender(null);
-          setAge(null);
-          setWeight(null);
-          setHeight(null);
+          setGender(data.gender);
+          setWeight(data.weight);
+          setHeight(data.height);
       }
       } catch (error) {
       if (error instanceof Error) {
           Alert.alert(error.message);
       }
       } finally {
+          getProfile2();
           setLoading(false);
       }
   }
@@ -78,7 +81,7 @@ function Profile({session}) {
       <Header text="Profile"/>
         <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
           <PhotoProfile session={session} name={fname} lname={lname}/>
-          <MiniDivInfo height={height} weight={weight}  age={age} gender={gender}/>
+          <MiniDivInfo height={height} weight={weight}  gender={gender}/>
           <ButtonSignOut onPress={() => supabase.auth.signOut()}>
             <Text style={{
                 color: "black",

@@ -31,24 +31,17 @@ const TrainImg = styled.Image`
     border-radius: 12px;
 `
 
-function TwoWorkoutDiv({onPress}) {
-    const route = useRoute();
-
-    console.log('route.params:', route.params);
-    const { selectedCategory, selectedLevel } = route.params || {};
-    console.log('selectedCategory:', selectedCategory);
-    console.log('selectedLevel:', selectedLevel);
-
+function TwoWorkoutDiv({onPress, workoutName}) {
   return (
     <Container onPress={onPress}>
         <View style={{display: "flex", flexDirection: "row", justifyContent:"space-between", gap: "15px"}}>
-            <TrainImg source={require('../../assets/image/back.jpg')}/>
+            <TrainImg source={{uri: workoutName.exercise_image}}/>
             <View style={{display: "flex", flexDirection: "column", justifyContent:"space-between"}}>
-                <Text style={{color: "#E0FE10",fontFamily: "Montserrat700",fontSize: 27,}}>
-                    {selectedLevel.exercise_title}
+                <Text style={{color: "#E0FE10",fontFamily: "Montserrat700",fontSize: 22,flexWrap: "wrap",maxWidth: 220 }}>
+                    {workoutName.exercise_title}
                 </Text>
                 <Text style={{color: "rgba(255, 255, 255, 0.80)",fontFamily: "Montserrat300",fontSize: 12,}}>
-                    156 KCAL · 40 MIN
+                    {workoutName.exercise_kcal} KCAL · {workoutName.exercise_duration} MIN
                 </Text>
             </View>
         </View>

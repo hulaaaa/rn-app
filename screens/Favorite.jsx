@@ -107,25 +107,25 @@ export const Favorite = ({ session }) => {
                                 onPress={() => navigation.navigate('SelTrein', { selectedCategory: "Yoga", selectedLevel: selectedLevel, allTrain: allTrain.filter(item => item.exercise_category === "Yoga" && item.exercise_level === selectedLevel) })}
                                 text="Yoga"
                                 img="https://waotqiccymmikmwadsdl.supabase.co/storage/v1/object/public/image_ex/yoga.png"
-                                numWork={0}
+                                numWork={ allTrain.filter(item => item.exercise_category === "Yoga" && item.exercise_level === selectedLevel)}
                             />
                             <WorkoutDiv 
                                 onPress={() => navigation.navigate('SelTrein', { selectedCategory: "Gym", selectedLevel: selectedLevel, allTrain: allTrain.filter(item => item.exercise_category === "Gym" && item.exercise_level === selectedLevel) })}
                                 text="Gym"
                                 img="https://waotqiccymmikmwadsdl.supabase.co/storage/v1/object/public/image_ex/biceps.jpg"
-                                numWork={0}
+                                numWork={ allTrain.filter(item => item.exercise_category === "Gym" && item.exercise_level === selectedLevel)}
                             />
                             <WorkoutDiv
                                 onPress={() => navigation.navigate('SelTrein', { selectedCategory: "Cardio", selectedLevel: selectedLevel, allTrain: allTrain.filter(item => item.exercise_category === "Cardio" && item.exercise_level === selectedLevel) })}
                                 text="Cardio"
                                 img="https://waotqiccymmikmwadsdl.supabase.co/storage/v1/object/public/image_ex/Figma%20Image%201824x1216.png"
-                                numWork={0}
+                                numWork={ allTrain.filter(item => item.exercise_category === "Cardio" && item.exercise_level === selectedLevel)}
                             />
                             <WorkoutDiv
                                 onPress={() => navigation.navigate('SelTrein', { selectedCategory: "Stretching", selectedLevel: selectedLevel, allTrain: allTrain.filter(item => item.exercise_category === "Stretching" && item.exercise_level === selectedLevel) })}
                                 text="Stretching"
                                 img="https://waotqiccymmikmwadsdl.supabase.co/storage/v1/object/public/image_ex/iGains%20screenshot.png"
-                                numWork={0}
+                                numWork={ allTrain.filter(item => item.exercise_category === "Stretching" && item.exercise_level === selectedLevel)}
                             />
                         </View>
                     ) : (

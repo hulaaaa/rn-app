@@ -55,8 +55,7 @@ const SvgComponent = ({onPress}) => (
 function SelTrein({ session }) {
   const route = useRoute();
 
-  console.log('route.params:', route.params);
-  const { selectedCategory, selectedLevel,allTrain } = route.params || {};
+  const { selectedCategory, selectedLevel, allTrain } = route.params || {};
   console.log('selectedCategory:', selectedCategory);
   console.log('selectedLevel:', selectedLevel);
   console.log('selectedLevel:', allTrain);
@@ -95,7 +94,7 @@ function SelTrein({ session }) {
         <View style={{ gap: "10px" }}>
           {
             allTrain.map(item => (
-              <TwoWorkoutDiv selectedLevel={selectedLevel} key={item.id} onPress={() => { navigation.navigate('PreStart') }} />            ))
+              <TwoWorkoutDiv workoutName={item} key={item.id} onPress={() => { navigation.navigate('PreStart') }} />))
           }
 
         </View>

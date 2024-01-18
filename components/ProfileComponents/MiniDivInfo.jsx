@@ -67,7 +67,7 @@ const MiniDiv = styled.View`
 `
 
 
-function MiniDivInfo({height, weight, age, gender}) {
+function MiniDivInfo({height, weight, gender}) {
     const miniDivArr = [
         {
             icon: (<IconWeight/>),
