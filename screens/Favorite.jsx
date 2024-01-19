@@ -85,6 +85,7 @@ export const Favorite = ({ session }) => {
             setLoading(false);
         }
     }
+    
 
     return (
         <View style={{ flex: 1 }}>

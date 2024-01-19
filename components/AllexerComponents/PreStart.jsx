@@ -47,8 +47,8 @@ const BackGoSvg = ({onPress}) => (
         </Svg>
     </TouchableOpacity>
 )
-const LoveSvg = () => (
-    <TouchableOpacity>
+const LoveSvg = ({onPress}) => (
+    <TouchableOpacity onPress={onPress}>
         <Svg xmlns="http://www.w3.org/2000/svg" fill="none" width={61} height={61}>
             <G filter="url(#a)">
             <Rect width={61} height={61} fill="#E0FE10" rx={30.5} />
@@ -92,7 +92,7 @@ const MainDivInfo = styled.View`
     display: flex;
     flexDirection: column;
     padding: 14px;
-    height: 413px;
+    height: 400px;
     border-radius: 35px;
     position: relative;
     background: #2A2E37;
@@ -116,7 +116,7 @@ const SvgContainer = styled.View`
 `
 const TrainImg = styled.Image`
     width: 100%;
-    height: 70%;
+    height: 71%;
     border-radius: 35px;
 `
 const BottoMenu = styled.View`
@@ -132,21 +132,62 @@ const BottoMenu = styled.View`
     background: #2A2E37;
 `
 
-function PreStart() {
+function PreStart({session}) {
+    const route = useRoute();
+    const { exersice } = route.params || {};
+    const item = exersice.item
     const navigation = useNavigation();
-
+    async function addToFavorites() {
+        try {
+            if (!session || !session.user) {
+                console.log("You need to be logged in to add to favorites.");
+                return;
+            }
+            const { data, error } = await supabase
+            .from('services_favorites')
+            .select('exercise_id, user_id')
+            .eq('exercise_id', item.id)
+            .eq('user_id', session.user.id);
+      
+            if (data && data.length > 0) {
+                console.log('Exercise already exists in favorites.');
+                return;
+            }
+      
+          const insertResult = await supabase
+            .from('services_favorites')
+            .insert([
+              {
+                user_id: session.user.id,
+                exercise_id: item.id,
+              },
+            ])
+            .single();
+      
+          if (insertResult.error) {
+            console.log("Error adding to favorites. Please try again.");
+            console.log(insertResult.error);
+            return;
+          }
+      
+          console.log("Success");
+        } catch (error) {
+          console.log(error);
+        }
+    };
+      
     return (
         <Container>
             <DivMix>
                 <MainDivInfo>
-                    <TrainImg source={require('../../assets/image/yoga.png')}/>
+                    <TrainImg source={{uri: item.exercise_image}}/>
                     <Text style={{
                         color: "#FFF",
-                        marginTop: 20,
+                        marginTop: 25,
                         fontFamily: "Montserrat700",
                         fontSize: 32
                     }}>
-                    QUICK AND DYNAMIC
+                    {item.exercise_title}
                     </Text>
                 </MainDivInfo>
                 <View style={{display: 'flex',flexDirection: 'row',gap: "4px"}}>
@@ -176,7 +217,7 @@ function PreStart() {
                                 fontFamily: "Montserrat500",
                                 fontSize: 50
                             }}>
-                                156
+                                {item.exercise_kcal?item.exercise_kcal:"Null"}
                             </Text>
                             <Text style={{
                                 color: "#FFF",
@@ -214,7 +255,7 @@ function PreStart() {
                                 fontFamily: "Montserrat500",
                                 fontSize: 50
                             }}>
-                                40
+                                {item.exercise_duration?item.exercise_duration:"Null"}
                             </Text>
                             <Text style={{
                                 color: "#FFF",
@@ -229,8 +270,8 @@ function PreStart() {
             </DivMix>
             <BottoMenu>
                 <BackGoSvg onPress={()=>{navigation.goBack()}}/>
-                <StartSvg onPress={()=>{navigation.navigate('TrainingNow')}}/>
-                <LoveSvg/>
+                <StartSvg onPress={()=>{navigation.navigate('TrainingNow',{"item":item})}}/>
+                <LoveSvg onPress={()=>addToFavorites()}/>
             </BottoMenu>
         </Container>
     )

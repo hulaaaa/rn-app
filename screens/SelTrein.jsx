@@ -51,21 +51,10 @@ const SvgComponent = ({onPress}) => (
   </TouchableOpacity>
 );
 
-
 function SelTrein({ session }) {
   const route = useRoute();
-
   const { selectedCategory, selectedLevel, allTrain } = route.params || {};
-  console.log('selectedCategory:', selectedCategory);
-  console.log('selectedLevel:', selectedLevel);
-  console.log('selectedLevel:', allTrain);
-
-
   const navigation = useNavigation();
-
-  
-  
-
   return (
     <Main>
       <Header>
@@ -94,7 +83,7 @@ function SelTrein({ session }) {
         <View style={{ gap: "10px" }}>
           {
             allTrain.map(item => (
-              <TwoWorkoutDiv workoutName={item} key={item.id} onPress={() => { navigation.navigate('PreStart') }} />))
+              <TwoWorkoutDiv workoutName={item} key={item.id} onPress={() => { navigation.navigate('PreStart', { exersice: {item}}) }} />))
           }
 
         </View>

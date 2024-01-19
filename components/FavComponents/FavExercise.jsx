@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, Alert, View,Image,TouchableOpacity,ScrollView ,ActivityIndicator} from 'react-native';
 import styled from 'styled-components';
 import Svg, { Path } from "react-native-svg"
+import { supabase } from '../../lib/supabase.js';
+import { useNavigation } from "@react-navigation/native";
+
 
 const Container = styled.View`
   display: flex;   
@@ -15,7 +18,7 @@ const Container = styled.View`
 
 `
 const TrainingImage = styled.Image`
-    width: 65px;
+    width: 80px;
     aspect-ratio: 2/2;
     border-radius: 10px;
 `
@@ -30,67 +33,53 @@ const CenterDotSvg = () => (
     </Svg>
 )
 
-function FavExercise({image,title,reps}) {
-    const [imagesLoaded, setImagesLoaded] = useState(false);
-    const [imageUrl, setImageUrl] = useState('');
-    useEffect(() => {
-        const loadImageAssets = async () => {
+function FavExercise({session,item,onRemove}) {
+    const navigation = useNavigation();
+    async function removeFromFavorites() {
         try {
-            let imageSrc = '';
-            switch (image) {
-            case 'biceps':
-                imageSrc = 'https://waotqiccymmikmwadsdl.supabase.co/storage/v1/object/public/image_ex/biceps.jpg';
-                break;
-            case 'back':
-                imageSrc = 'https://waotqiccymmikmwadsdl.supabase.co/storage/v1/object/public/image_ex/back.jpg';
-                break;
-            case 'abs':
-                imageSrc = 'https://waotqiccymmikmwadsdl.supabase.co/storage/v1/object/public/image_ex/abs.jpg';
-                break;
-            default:
-                break;
-            }
-
-            setImageUrl(imageSrc);
-            await Image.prefetch(imageSrc);
-
-            setImagesLoaded(true);
+          if (!session || !session.user) {
+            console.log("You need to be logged in to remove from favorites.");
+            return;
+          }
+          const { data, error } = await supabase
+            .from('services_favorites')
+            .delete()
+            .eq('exercise_id', item.id)
+            .eq('user_id', session.user.id);
+      
+          if (error) {
+            console.log("Error removing from favorites. Please try again.");
+            console.log(error);
+            return;
+          }
+      
+          console.log("Success");
+          onRemove()
         } catch (error) {
-            console.error('Error loading images:', error);
+          console.log(error);
         }
-        };
-
-        loadImageAssets();
-    }, [image]);
-    
+      };
     return (
     <>
-        {
-        imagesLoaded ? (
-            <Container>
-                <View style={{display:"flex",flexDirection: "row",alignItems: "center",gap: "20",}}>
-                {image === "biceps" && <TrainingImage source={{ uri: imageUrl }} />}
-                {image === "back" && <TrainingImage source={{ uri: imageUrl }} />}
-                {image === "abs" && <TrainingImage source={{ uri: imageUrl }} />}
-                    <View style={{display:"flex",flexDirection: "column",alignItems: "flex-start",gap: "8px",}}>
-                        <Text style={{color: "#E0FE10",fontFamily: "Montserrat700",fontSize: 15}}>
-                            {title}
-                        </Text>
-                        <Text style={{color: "rgba(255, 255, 255, 0.80)",fontFamily: "Montserrat300",fontSize: 13}}>
-                            {reps}
-                        </Text>
-                    </View>
+        <Container>
+            <View style={{display:"flex",flexDirection: "row",alignItems: "center",gap: "20",}}>
+            <TrainingImage source={{ uri: item.exercise_image }} />
+                <View style={{display:"flex",flexDirection: "column",alignItems: "flex-start",gap: "8px",}}>
+                    <Text style={{color: "#E0FE10",fontFamily: "Montserrat700",fontSize: 15}}>
+                        {item.exercise_title}
+                    </Text>
+                    <Text style={{color: "rgba(255, 255, 255, 0.80)",fontFamily: "Montserrat300",fontSize: 13}}>
+                    {`${item.exercise_duration} Min · ${item.exercise_kcal} Kcal`}
+                    </Text>
                 </View>
-                <TouchableOpacity style={{width: 20,height: 20}}>
-                    <CenterDotSvg/>
-                </TouchableOpacity>   
-            </Container>
-            
-
-        ):(
-            <ActivityIndicator size="large" color="#E0FE10" />
-        )
-    }
+            </View>
+            <TouchableOpacity 
+                style={{width: 20,height: 20}}
+                onPress={() => {removeFromFavorites()}}
+            >
+                <CenterDotSvg />
+            </TouchableOpacity>   
+        </Container>
     </>
   )
 }

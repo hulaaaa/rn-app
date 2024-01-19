@@ -53,7 +53,7 @@ const Container = styled.View`
 `
 const TrainImg = styled.Image`
     width: 93%;
-    height: 200px;
+    height: 220px;
     border-radius: 20px;
     margin: 0px 15px;
     margin-top: 50px;
@@ -62,7 +62,8 @@ const BottoMenu = styled.View`
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 50%;
+    justify-content: space-between;
+    height: 45%;
     width: 100%;
     position: absolute;
     bottom: 0;
@@ -105,9 +106,10 @@ const Header = styled.View`
 `
 
 
-function TrainingNow() {
+function TrainingNow({session}) {    
+    const route = useRoute();
     const navigation = useNavigation();
-
+    const { item } = route.params || {};
     return (
         <Container>
             <Header>
@@ -118,7 +120,7 @@ function TrainingNow() {
                             fontFamily: "Montserrat700",
                             fontSize: 32,
                         }}>
-                            12
+                            12 / {item.exercise_kcal}
                         </Text>
                         <KcalSvg/>
                     </View>
@@ -143,16 +145,6 @@ function TrainingNow() {
                     borderRadius: 10,
                     backgroundColor: "rgba(255, 255, 255, 0.10)"
                 }}/>
-
-                <Text style={{
-                    color: "#FFF",
-                    alignSelf: 'flex-start',
-                    fontFamily: "Montserrat700",
-                    fontSize: 50,
-                    marginTop:10,
-                }}>
-                    00:29
-                </Text>
 
                 <CompletDiv>
                     <TextTime>
@@ -198,21 +190,21 @@ function TrainingNow() {
 
                 <BtnDiv>
                     <Text style={{
-                        color: "rgba(255, 255, 255, 0.30)",
+                        color: "transparent",
                         fontFamily: "Montserrat300",
                         fontSize: 25,
                         marginLeft: 20
                     }}>
-                        Prev.
+                        Null
                     </Text>
                     <PauseSvg/>
                     <Text style={{
-                        color: "#FFF",
+                        color: "transparent",
                         fontFamily: "Montserrat300",
                         fontSize: 25,
                         marginRight: 20
                     }}>
-                        Next
+                        Null
                     </Text>
                 </BtnDiv>
             </BottoMenu>

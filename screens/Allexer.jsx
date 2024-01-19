@@ -27,20 +27,92 @@ const BoxFex = styled.View`
 `
 
 
-function Allexer() {
-
+function Allexer({session}) {
     const route = useRoute();
     const routeName = route.name;
+    const [favoriteExercises, setFavoriteExercises] = useState([]);
+    const [key, setKey] = useState(0);
+
+    async function getFavoriteExerciseIds() {
+        try {
+          if (!session || !session.user) {
+            console.log("You need to be logged in to get favorites.");
+            return [];
+          }
+          const { data, error } = await supabase
+            .from('services_favorites')
+            .select('exercise_id')
+            .eq('user_id', session.user.id);
+          if (error) {
+            console.log("Error getting favorite exercise ids.");
+            console.log(error);
+            return [];
+          }
+          return data.map(item => item.exercise_id);
+        } catch (error) {
+          console.log(error);
+          return [];
+        }
+    }
+    async function getExercisesByFavoriteIds(favoriteIds) {
+        try {
+          if (!favoriteIds || favoriteIds.length === 0) {
+            console.log("No favorite exercise ids provided.");
+            return [];
+          }
+          const { data, error } = await supabase
+            .from('services_exercises')
+            .select('*')
+            .in('id', favoriteIds);
+          if (error) {
+            console.log("Error getting exercises by favorite ids.");
+            console.log(error);
+            return [];
+          }
+          return data;
+        } catch (error) {
+          console.log(error);
+          return [];
+        }
+    }
+    async function fetchData() {
+        try {
+            const favoriteIds = await getFavoriteExerciseIds();
+            const favoriteExercises = await getExercisesByFavoriteIds(favoriteIds);
+            setFavoriteExercises(favoriteExercises)
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    const handleRemove = async () => {
+      try {
+          await fetchData(); // Оновлюємо дані перед зміною key
+          setKey((prevKey) => prevKey + 1);
+      } catch (error) {
+          console.log(error);
+      }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, [key]);
     return (
-        <View>
+        <View key={key}>
             <Main>
                 <Header text="Favorite exercise"/>
                 <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
                     <BoxFex>
-
-                        <FavExercise image="biceps"  title="One Hand Dumbbell" reps="Set 5 · 10 Reps"/>
-                        <FavExercise image="back"  title="Overhead Press" reps="Set 3 · 15 Reps"/>
-                        <FavExercise image="abs"  title="Bend Over Row" reps="Set 4 · 12 Reps"/>
+                        {
+                            favoriteExercises.length>0?
+                            favoriteExercises.map((item, index) => (
+                                <FavExercise key={index} item={item} session={session}onRemove={handleRemove} />
+                            )):(
+                            <Text style={{color: "#FFF",fontFamily: "Montserrat700",fontSize: 15}}>
+                                No favorite exercises. 
+                            </Text>
+                            )
+                        
+                        }
 
                     </BoxFex>
                 </ScrollView>

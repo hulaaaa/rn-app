@@ -5,9 +5,8 @@ import { SafeAreaView, Text, Image, View,Alert, TextInput,TouchableOpacity } fro
 import styled from 'styled-components/native';
 import { RulerPicker } from 'react-native-ruler-picker';
 import { launchImageLibrary} from 'react-native-image-picker';
-
-import { Button } from "react-native-elements/dist/buttons/Button";
-import { ButtonGroup } from "@rneui/themed/dist/ButtonGroup";
+import { Button } from '@rneui/themed';
+import { ButtonGroup } from '@rneui/themed';
 
 
 const Container = styled.View`
