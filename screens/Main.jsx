@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View,Image, ScrollView } from 'react-native';
+import { StyleSheet, Text, View,Image, Alert,ScrollView, RefreshControl } from 'react-native';
 import { Button, Input } from 'react-native-elements'
 
 import styled from 'styled-components';
@@ -28,11 +28,30 @@ function MainScreen({session}) {
     const [kcal, setKcal] = useState(0);
     const [favex, setFavex] = useState(0);
     const [allTrain, setAllTrain] = useState(0);
+    const [refreshing, setRefreshing] = useState(false);
 
-    useEffect(() => {
-        if (session) getProfile();
-    }, [session]);
-
+    
+    async function getFavoriteExerciseIds() {
+        try {
+          if (!session || !session.user) {
+            console.log("You need to be logged in to get favorites.");
+            return [];
+          }
+          const { data, error } = await supabase
+            .from('services_favorites')
+            .select('exercise_id')
+            .eq('user_id', session.user.id);
+          if (error) {
+            console.log("Error getting favorite exercise ids.");
+            console.log(error);
+            return [];
+          }
+          return data.map(item => item.exercise_id);
+        } catch (error) {
+          console.log(error);
+          return [];
+        }
+    }
     async function getProfile() {
         try {
             setLoading(true);
@@ -76,13 +95,41 @@ function MainScreen({session}) {
         } finally {
             setLoading(false);
         }
-      }
+    }
+    const fetchData = async () => {
+        try {
+            if (session) {
+                await getProfile();
+                const favoriteIds = await getFavoriteExerciseIds();
+                setFavex(favoriteIds.length);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    useEffect(() => {
+        fetchData();
+    }, [session]);
+    const onRefresh = () => {
+        setRefreshing(true);
+        fetchData()
+        setTimeout(() => {
+          setRefreshing(false);
+        }, 600); 
+    };
+
     return (
         <View>
             <Main>
                 <ScrollView 
                     showsVerticalScrollIndicator={false}
                     showsHorizontalScrollIndicator={false}
+                    refreshControl={
+                        <RefreshControl
+                          refreshing={refreshing}
+                          onRefresh={onRefresh}
+                        />
+                      }
                 >
                     <WelcomeComponent 
                         session={session}
@@ -91,12 +138,11 @@ function MainScreen({session}) {
                     />
                     <StatShortComponent
                         kcal={kcal}
-                        favex={27}
+                        favex={favex}
                         allTrain={allTrain}
                     />
                     <TrainingStat/>
                     <MuslceTraining/>
-
                 </ScrollView>
             </Main>
             <Nav routeName={routeName}/> 

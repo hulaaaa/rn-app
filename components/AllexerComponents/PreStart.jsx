@@ -47,14 +47,14 @@ const BackGoSvg = ({onPress}) => (
         </Svg>
     </TouchableOpacity>
 )
-const LoveSvg = ({onPress}) => (
+const LoveSvg = ({onPress, isFavorite}) => (
     <TouchableOpacity onPress={onPress}>
         <Svg xmlns="http://www.w3.org/2000/svg" fill="none" width={61} height={61}>
             <G filter="url(#a)">
             <Rect width={61} height={61} fill="#E0FE10" rx={30.5} />
             </G>
             <Path
-            fill="#E0FE10"
+            fill={isFavorite?"#151514":"#E0FE10"}
             stroke="#151514"
             d="M38.34 30.143c-.194.928-.737 1.859-1.484 2.747-.744.885-1.665 1.7-2.572 2.396A26.942 26.942 0 0 1 31 37.432a26.942 26.942 0 0 1-3.284-2.146c-.907-.696-1.829-1.511-2.572-2.396-.747-.888-1.29-1.819-1.484-2.747-.404-1.93-.002-3.33.736-4.238.744-.918 1.878-1.398 3.048-1.398h.03a3.72 3.72 0 0 1 1.778.333c.549.254 1.01.636 1.34 1.102l.408.577.408-.577c.33-.466.791-.848 1.34-1.102a3.72 3.72 0 0 1 1.778-.334l.015.001h.015c1.17 0 2.303.48 3.048 1.398.738.909 1.14 2.307.736 4.238Z"
             />
@@ -137,45 +137,81 @@ function PreStart({session}) {
     const { exersice } = route.params || {};
     const item = exersice.item
     const navigation = useNavigation();
+    const [isFavorite, setIsFavorite] = useState(false);
+    useEffect(() => {
+        const checkFavoriteStatus = async () => {
+          try {
+            if (!session || !session.user) {
+              return;
+            }
+    
+            const { data, error } = await supabase
+              .from('services_favorites')
+              .select('exercise_id, user_id')
+              .eq('exercise_id', item.id)
+              .eq('user_id', session.user.id);
+    
+            setIsFavorite(data && data.length > 0);
+          } catch (error) {
+            console.log(error);
+          }
+        };
+        checkFavoriteStatus();
+    }, [session, item.id]);
     async function addToFavorites() {
         try {
-            if (!session || !session.user) {
-                console.log("You need to be logged in to add to favorites.");
-                return;
-            }
-            const { data, error } = await supabase
+          if (!session || !session.user) {
+            console.log("You need to be logged in to add to favorites.");
+            return;
+          }
+    
+          const { data, error } = await supabase
             .from('services_favorites')
             .select('exercise_id, user_id')
             .eq('exercise_id', item.id)
             .eq('user_id', session.user.id);
-      
-            if (data && data.length > 0) {
-                console.log('Exercise already exists in favorites.');
-                return;
+    
+          if (data && data.length > 0) {
+            const deleteResult = await supabase
+              .from('services_favorites')
+              .delete()
+              .eq('exercise_id', item.id)
+              .eq('user_id', session.user.id);
+    
+            if (deleteResult.error) {
+              console.log("Error deleting from favorites. Please try again.");
+              console.log(deleteResult.error);
+              return;
             }
-      
-          const insertResult = await supabase
-            .from('services_favorites')
-            .insert([
-              {
-                user_id: session.user.id,
-                exercise_id: item.id,
-              },
-            ])
-            .single();
-      
-          if (insertResult.error) {
-            console.log("Error adding to favorites. Please try again.");
-            console.log(insertResult.error);
-            return;
+    
+            setIsFavorite(false);
+            console.log("Successfully removed from favorites.");
+          } else {
+            const insertResult = await supabase
+              .from('services_favorites')
+              .insert([
+                {
+                  user_id: session.user.id,
+                  exercise_id: item.id,
+                },
+              ])
+              .single();
+    
+            if (insertResult.error) {
+              console.log("Error adding to favorites. Please try again.");
+              console.log(insertResult.error);
+              return;
+            }
+    
+            setIsFavorite(true);
+            console.log("Successfully added to favorites.");
           }
-      
-          console.log("Success");
         } catch (error) {
           console.log(error);
         }
-    };
-      
+    }
+    
+    
     return (
         <Container>
             <DivMix>
@@ -271,7 +307,7 @@ function PreStart({session}) {
             <BottoMenu>
                 <BackGoSvg onPress={()=>{navigation.goBack()}}/>
                 <StartSvg onPress={()=>{navigation.navigate('TrainingNow',{"item":item})}}/>
-                <LoveSvg onPress={()=>addToFavorites()}/>
+                <LoveSvg onPress={()=>addToFavorites()} isFavorite={isFavorite} />
             </BottoMenu>
         </Container>
     )
