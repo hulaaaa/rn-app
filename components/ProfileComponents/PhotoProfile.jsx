@@ -68,7 +68,7 @@ function PhotoProfile({ session, name, lname }) {
         });
       }
 
-      if (!result.cancelled && result.assets && result.assets.length > 0) {
+      if (!result.canceled && result.assets && result.assets.length > 0) {
         const uri = result.assets[0].uri;
         uploadImage(uri);
       }
