@@ -5,6 +5,7 @@ import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import Svg, { G, Rect, Path, Defs, Circle } from "react-native-svg";
 import * as Progress from 'react-native-progress';
+import { supabase } from '../lib/supabase';
 
 const CancelGoSvg = ({ onPress }) => (
   <TouchableOpacity onPress={onPress}>
@@ -32,17 +33,29 @@ const KcalSvg = () => (
   </Svg>
 );
 
-const PauseSvg = ({ onPress }) => (
+const PauseSvg = ({ onPress,isPaused }) => (
   <TouchableOpacity onPress={onPress}>
-    <Svg xmlns="http://www.w3.org/2000/svg" fill="none" width={105} height={105}>
-      <Circle cx={52.5} cy={52.5} r={52.5} fill="#E0FE10" />
-      <Path
-        stroke="#000"
-        strokeLinecap="round"
-        strokeWidth={3}
-        d="M47 43v20M58.5 43v20"
-      />
-    </Svg>
+    {
+        isPaused?(
+            <Svg xmlns="http://www.w3.org/2000/svg" fill="none" width={105} height={105}>
+                <Rect width={105} height={105} fill="#E0FE10" rx={52.5} />
+                <Path
+                fill="#000"
+                d="M66.49 49.923c1.952 1.163 1.952 3.99 0 5.154L46.962 66.714c-2 1.192-4.536-.249-4.536-2.577V40.863c0-2.328 2.536-3.77 4.536-2.578l19.526 11.638Z"
+                />
+            </Svg>
+        ):(
+            <Svg xmlns="http://www.w3.org/2000/svg" fill="none" width={105} height={105}>
+            <Circle cx={52.5} cy={52.5} r={52.5} fill="#E0FE10" />
+            <Path
+                stroke="#000"
+                strokeLinecap="round"
+                strokeWidth={3}
+                d="M47 43v20M58.5 43v20"
+            />
+            </Svg>
+        )
+    }
   </TouchableOpacity>
 );
 
@@ -116,33 +129,69 @@ function TrainingNow() {
     const [progress, setProgress] = useState(0);
     const [calories, setCalories] = useState(0);
     const [timer, setTimer] = useState(0);
+    const [isPaused, setIsPaused] = useState(false);
+    const [loading, setLoading] = useState(false); 
+    const [trainingCompleted, setTrainingCompleted] = useState(false); 
     const route = useRoute();
     const navigation = useNavigation();
-    const { item } = route.params || {};
+    const { session } = route.params || {};
+    const { item } = route.params || {}
     const durationExercise_min = item.exercise_duration;
 
-    useEffect(() => {
-        let intervalId;
-        const updateTimer = () => {
-          setTimer((prevTimer) => {
-            const newTimer = prevTimer + 1;
-            if (newTimer >= durationExercise_min * 60) {
-              clearInterval(intervalId); 
-              Alert.alert('Training Completed', 'Congratulations! You have completed your training.');
+    async function loadTrain() {
+        try {
+            setLoading(true);
+            if (!session?.user) throw new Error('No user on the session!')
+            const updates = {
+                training_date: new Date().toLocaleDateString(),
+                training_time: durationExercise_min,
+                exercise_id: item.id,
+                user_id: session?.user?.id,
             }
-            return Math.min(newTimer, durationExercise_min * 60); 
-          });
+            const { error } = await supabase.from('services_latesttraining').upsert(updates);
+            if (error) throw error;
+            console.log('Profile updated successfully!');
+            Alert.alert("Ти молодець, вправа виконана!")
+            navigation.navigate('Main');
+        } catch (error) {
+            console.error('Error loading training:', error.message);
+            Alert.alert('Error loading training');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        let intervalId
+        const caloriesPerMinute = item.exercise_kcal / durationExercise_min
+        const updateTimer = () => {
+            if (!isPaused && !trainingCompleted) {
+                setTimer((prevTimer) => {
+                    const newTimer = prevTimer + 1;
+                    const newCalories = calories + caloriesPerMinute / 60;
+                    if (newTimer >= durationExercise_min * 60) {
+                        clearInterval(intervalId);
+                        setTrainingCompleted(true); 
+                        loadTrain()
+                    }
+                    setCalories(newCalories);
+                    setProgress((newTimer / (durationExercise_min * 60)) * 100);
+                    return Math.min(newTimer, durationExercise_min * 60);
+                });
+            }
         };
         intervalId = setInterval(updateTimer, 1000);
         return () => clearInterval(intervalId);
-    }, [durationExercise_min]);
-
-    
+    }, [isPaused, durationExercise_min, item.exercise_kcal, calories, trainingCompleted]);
+    const togglePause = () => {
+        setIsPaused((prevIsPaused) => !prevIsPaused);
+    };
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = seconds % 60;
         return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
     };
+    
     return (
       <Container>
         <Header>
@@ -222,24 +271,26 @@ function TrainingNow() {
           </CompletDiv>
   
           <BtnDiv>
+            <TouchableOpacity onPress={togglePause}>
+                <Text style={{
+                color: "transparent",
+                fontFamily: "Montserrat300",
+                fontSize: 25,
+                marginLeft: 20
+                }}>
+                Null
+                </Text>
+            </TouchableOpacity>
+            <PauseSvg onPress={togglePause} isPaused={isPaused}/>
             <Text style={{
-              color: "transparent",
-              fontFamily: "Montserrat300",
-              fontSize: 25,
-              marginLeft: 20
+                color: "transparent",
+                fontFamily: "Montserrat300",
+                fontSize: 25,
+                marginRight: 20
             }}>
-              Null
+                Null
             </Text>
-            <PauseSvg />
-            <Text style={{
-              color: "transparent",
-              fontFamily: "Montserrat300",
-              fontSize: 25,
-              marginRight: 20
-            }}>
-              Null
-            </Text>
-          </BtnDiv>
+            </BtnDiv>
         </BottoMenu>
       </Container>
     );

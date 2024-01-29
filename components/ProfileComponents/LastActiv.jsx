@@ -1,8 +1,10 @@
-import { StyleSheet, Text, View,Image,TouchableOpacity,ScrollView } from 'react-native';
+import { useState, useEffect } from 'react';
+import { Text, View } from 'react-native';
 import styled from 'styled-components';
+import { supabase } from '../../lib/supabase';
 
 const Container = styled.View`
-  display: flex;   
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
@@ -10,9 +12,10 @@ const Container = styled.View`
   margin: 0;
   flex: 1;
   margin-top: 0px;
-`
+`;
+
 const TextiAct = styled.View`
-  display: flex;   
+  display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-between;
@@ -21,9 +24,10 @@ const TextiAct = styled.View`
   padding: 0;
   margin: 0;
   padding-top: 30px;
-`
+`;
+
 const ActiveDiv = styled.View`
-  display: flex;   
+  display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
@@ -31,94 +35,102 @@ const ActiveDiv = styled.View`
   background: #2A2E37;
   padding: 20px;
   border-radius: 17px;
-`
-const TextMore = styled.View`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding-top: 20px;
-`
+`;
 
-function LastActiv() {
-  const activeLatestArr = [
-    {
-      dateDay: "Wed",
-      date: "09",
-      title: "BICEPS TRAINING",
-      time: "19 MIN"
-    },
-    {
-      dateDay: "Sat",
-      date: "10",
-      title: "ABS TRAINING",
-      time: "12 MIN"
-    },
-    {
-      dateDay: "Mon",
-      date: "03",
-      title: "BACK TRAINING",
-      time: "21 MIN"
-    },
-  ]
+function LastActiv({ id }) {
+  const [latestActivities, setLatestActivities] = useState([]);
+
+  useEffect(() => {
+    async function fetchLatestActivities() {
+      try {
+        const { data: latestActivitiesData, error: latestActivitiesError } = await supabase
+          .from('services_latesttraining')
+          .select('training_date, training_time, exercise_id')
+          .eq('user_id', id)
+          .order('training_date', { ascending: false });
+
+        if (latestActivitiesError) {
+          console.error('Error fetching latest activities:', latestActivitiesError.message);
+          return;
+        }
+
+        const enrichedActivities = await Promise.all(
+          latestActivitiesData.map(async (activity) => {
+            const { data: exerciseData, error: exerciseError } = await supabase
+              .from('services_exercises')
+              .select('exercise_title')
+              .eq('id', activity.exercise_id)
+              .single();
+
+            if (exerciseError) {
+              console.error('Error fetching exercise details:', exerciseError.message);
+              return null;
+            }
+
+            return {
+              ...activity,
+              exercise_title: exerciseData ? exerciseData.exercise_title : 'Unknown Exercise',
+            };
+          })
+        );
+
+        setLatestActivities(enrichedActivities.filter(Boolean));
+      } catch (error) {
+        console.error('Error fetching latest activities:', error.message);
+      }
+    }
+
+    fetchLatestActivities();
+  }, [id]);
+
   return (
     <Container>
-        <TextiAct>
-            <Text
+      <TextiAct>
+        <Text
+          style={{
+            fontSize: 17,
+            fontFamily: 'Montserrat700',
+            color: '#FEFFFF',
+          }}
+        >
+          LATEST ACTIVITIES
+        </Text>
+        {latestActivities.map((item, index) => (
+          <ActiveDiv key={index}>
+            <View>
+              <Text
                 style={{
-                    fontSize: 17,
-                    fontFamily: "Montserrat700",
-                    color: "#FEFFFF"
+                  fontSize: 12,
+                  fontFamily: 'Montserrat500',
+                  color: '#F0F0F0',
                 }}
+              >
+                {item.training_date}
+              </Text>
+            </View>
+            <Text
+              style={{
+                fontSize: 12,
+                fontFamily: 'Montserrat700',
+                color: '#E0FE10',
+              }}
             >
-                LATEST ACTIVITES
+              {item.exercise_title}
             </Text>
-            {
-              activeLatestArr?.map((item, index)=>(
-                <ActiveDiv key={index}>
-                  <View>
-                    <Text
-                        style={{
-                            fontSize: 12,
-                            fontFamily: "Montserrat500",
-                            color: "#F0F0F0"
-                        }}
-                    >
-                        {item.dateDay}
-                    </Text>
-                    <Text
-                      style={{
-                          fontSize: 12,
-                          fontFamily: "Montserrat300",
-                          color: "rgba(255, 255, 255, 0.40)"
-                      }}
-                  >
-                      {item.date}
-                  </Text>
-                  </View>
-                  <Text
-                  style={{
-                      fontSize: 12,
-                      fontFamily: "Montserrat700",
-                      color: "#E0FE10"
-                  }}
-                  >
-                    {item.title}
-                  </Text>
-                  <Text
-                  style={{
-                      fontSize: 12,
-                      fontFamily: "Montserrat500",
-                      color: "#F0F0F0"
-                  }}
-                  >
-                    {item.time}
-                  </Text>
-                </ActiveDiv>
-              ))
-            }
-        </TextiAct>
+            <Text
+              style={{
+                fontSize: 12,
+                fontFamily: 'Montserrat500',
+                color: '#F0F0F0',
+              }}
+            >
+              {item.training_time} MIN
+            </Text>
+          </ActiveDiv>
+        ))}
+      </TextiAct>
     </Container>
-  )
+  );
 }
 
-export default LastActiv
+export default LastActiv;

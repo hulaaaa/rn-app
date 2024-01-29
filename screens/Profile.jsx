@@ -109,7 +109,7 @@ function Profile({session}) {
               Sign Out
             </Text>
           </ButtonSignOut>
-          <LastActiv/>
+          <LastActiv id={session?.user.id}/>
         </ScrollView>
       </Main>
       <Nav routeName={routeName}/>

@@ -306,7 +306,7 @@ function PreStart({session}) {
             </DivMix>
             <BottoMenu>
                 <BackGoSvg onPress={()=>{navigation.goBack()}}/>
-                <StartSvg onPress={()=>{navigation.navigate('TrainingNow',{"item":item})}}/>
+                <StartSvg onPress={()=>{navigation.navigate('TrainingNow',{"item":item,"session": session})}}/>
                 <LoveSvg onPress={()=>addToFavorites()} isFavorite={isFavorite} />
             </BottoMenu>
         </Container>
