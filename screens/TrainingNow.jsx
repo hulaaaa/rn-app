@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Text, Alert, View, TouchableOpacity,Image } from 'react-native';
+import React, { useState,useRef, useEffect } from 'react';
+import { Text, Alert, View, TouchableOpacity, Dimensions,Image } from 'react-native';
 import styled from 'styled-components';
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import Svg, { G, Rect, Path, Defs, Circle } from "react-native-svg";
 import * as Progress from 'react-native-progress';
 import { supabase } from '../lib/supabase';
+import SwiperFlatList from 'react-native-swiper-flatlist';
+
 
 const CancelGoSvg = ({ onPress }) => (
   <TouchableOpacity onPress={onPress}>
@@ -67,12 +69,13 @@ const Container = styled.View`
 
 const TrainImg = styled.Image`
   width: 93%;
-  height: 220px;
+  height: 300px;
   border-radius: 20px;
-  margin: 0px 15px;
-  margin-top: 50px;
 `;
-
+const ImageWelcomeDiv = styled.View`
+  width: 100vw;
+  height: 300px;
+`
 const BottoMenu = styled.View`
   display: flex;
   flex-direction: column;
@@ -124,6 +127,30 @@ const Header = styled.View`
   align-items: center;
   justify-content: space-between;
 `;
+const CustomSlide = ({ backgroundColor, text, onPress, img }) => (
+  <TouchableOpacity onPress={onPress}>
+    <View style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
+      {text === 'image' ? (
+        <TrainImg source={{ uri: img }} />
+      ) : (
+        <View
+          style={{
+            width: '93%',
+            height: '100%',
+            borderRadius: 20,
+            backgroundColor: backgroundColor,
+            alignItems: 'center',
+            padding: 20,
+            justifyContent: 'center',
+          }}
+        >
+          <Text style={{ color: 'white',textAlign: 'center', fontFamily: 'Montserrat700', fontSize: 15 }}>{text}</Text>
+        </View>
+      )}
+    </View>
+  </TouchableOpacity>
+);
+
 
 function TrainingNow() {
     const [progress, setProgress] = useState(0);
@@ -139,28 +166,48 @@ function TrainingNow() {
     const durationExercise_min = item.exercise_duration;
 
     async function loadTrain() {
-        try {
-            setLoading(true);
-            if (!session?.user) throw new Error('No user on the session!')
-            const updates = {
-                training_date: new Date().toLocaleDateString(),
-                training_time: durationExercise_min,
-                exercise_id: item.id,
-                user_id: session?.user?.id,
-            }
-            const { error } = await supabase.from('services_latesttraining').upsert(updates);
-            if (error) throw error;
-            console.log('Profile updated successfully!');
-            Alert.alert("Ти молодець, вправа виконана!")
-            navigation.navigate('Main');
-        } catch (error) {
-            console.error('Error loading training:', error.message);
-            Alert.alert('Error loading training');
-        } finally {
-            setLoading(false);
-        }
-    }
-
+      try {
+          setLoading(true);
+          if (!session?.user) throw new Error('No user on the session!')
+          const { data: userProfile, error: profileError } = await supabase
+              .from('users_profile')
+              .select('kcal_count, train_count')
+              .eq('user_id', session?.user?.id)
+              .single();
+  
+          if (profileError) throw profileError;
+  
+          const { kcal_count: currentKcalCount, train_count: currentTrainCount } = userProfile;
+  
+          const updates = {
+              kcal_count: currentKcalCount + item.exercise_kcal,
+              train_count: currentTrainCount + 1,
+          };
+          const { error } = await supabase
+              .from('users_profile')
+              .update(updates)
+              .eq('user_id', session?.user?.id);
+  
+          if (error) throw error;
+          const trainingUpdates = {
+              training_date: new Date().toLocaleDateString(),
+              training_time: durationExercise_min,
+              exercise_id: item.id,
+              user_id: session?.user?.id,
+          };
+          const { trainingError } = await supabase.from('services_latesttraining').upsert(trainingUpdates);
+          if (trainingError) throw trainingError;
+  
+          console.log('Profile and training data updated successfully!');
+          Alert.alert("Ти молодець, вправа виконана!")
+          navigation.navigate('Main');
+      } catch (error) {
+          console.error('Error loading training:', error.message);
+          Alert.alert('Error loading training');
+      } finally {
+          setLoading(false);
+      }
+  }
     useEffect(() => {
         let intervalId
         const caloriesPerMinute = item.exercise_kcal / durationExercise_min
@@ -191,7 +238,11 @@ function TrainingNow() {
         const remainingSeconds = seconds % 60;
         return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
     };
-    
+    const [showText, setShowText] = useState(false);
+
+  const toggleText = () => {
+    setShowText(!showText);
+  };
     return (
       <Container>
         <Header>
@@ -218,8 +269,15 @@ function TrainingNow() {
           <CancelGoSvg onPress={() => { navigation.navigate('Main') }} />
         </Header>
   
-        <TrainImg source={require('../assets/image/imgTrain.png')} />
-  
+        <ImageWelcomeDiv>
+          <CustomSlide
+            backgroundColor="#2A2E37"
+            text={showText ? "image": item.exercise_desc}
+            onPress={() => setShowText(!showText)}
+            img={item.exercise_image}
+          />
+        </ImageWelcomeDiv>
+
         <BottoMenu>
           <View style={{
             width: 87,
@@ -294,6 +352,6 @@ function TrainingNow() {
         </BottoMenu>
       </Container>
     );
-}
   
-export default TrainingNow;
+}
+export default TrainingNow
