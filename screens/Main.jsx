@@ -1,5 +1,4 @@
-import { StyleSheet, Text, View,Image, Alert,ScrollView, RefreshControl } from 'react-native';
-import { Button, Input } from 'react-native-elements'
+import {Alert, RefreshControl, ScrollView, View} from 'react-native';
 
 import styled from 'styled-components';
 import WelcomeComponent from '../components/MainComponents/WelcomeComponent';
@@ -8,8 +7,8 @@ import TrainingStat from '../components/MainComponents/TrainingStat';
 import MuslceTraining from '../components/MainComponents/MuslceTraining';
 import {useRoute} from "@react-navigation/native"
 import Nav from '../components/MainComponents/Nav';
-import { supabase } from '../lib/supabase'
-import { useEffect, useState } from 'react';
+import {supabase} from '../lib/supabase'
+import {useEffect, useState} from 'react';
 
 
 const Main = styled.View`
@@ -30,59 +29,60 @@ function MainScreen({session}) {
     const [allTrain, setAllTrain] = useState(0);
     const [refreshing, setRefreshing] = useState(false);
 
-    
+
     async function getFavoriteExerciseIds() {
         try {
-          if (!session || !session.user) {
-            console.log("You need to be logged in to get favorites.");
-            return [];
-          }
-          const { data, error } = await supabase
-            .from('services_favorites')
-            .select('exercise_id')
-            .eq('user_id', session.user.id);
-          if (error) {
-            console.log("Error getting favorite exercise ids.");
+            if (!session || !session.user) {
+                console.log("You need to be logged in to get favorites.");
+                return [];
+            }
+            const {data, error} = await supabase
+                .from('services_favorites')
+                .select('exercise_id')
+                .eq('user_id', session.user.id);
+            if (error) {
+                console.log("Error getting favorite exercise ids.");
+                console.log(error);
+                return [];
+            }
+            return data.map(item => item.exercise_id);
+        } catch (error) {
             console.log(error);
             return [];
-          }
-          return data.map(item => item.exercise_id);
-        } catch (error) {
-          console.log(error);
-          return [];
         }
     }
+
     async function getProfile() {
         try {
             setLoading(true);
             if (!session?.user) throw new Error('No user on the session!');
-    
+
             // First, fetch data from users_user table
-            const { data: userData, error: userError, status: userStatus } = await supabase
+            const {data: userData, error: userError, status: userStatus} = await supabase
                 .from('users_user')
                 .select(`first_name, last_name, id`)
                 .eq('id', session?.user.id)
                 .single();
-    
+
             if (userError && userStatus !== 406) {
                 throw userError;
             }
-    
+
             if (userData) {
                 setFname(userData.first_name);
                 setLname(userData.last_name);
-    
+
                 // Second, fetch data from users_profile table using the user id
-                const { data: profileData, error: profileError, status: profileStatus } = await supabase
+                const {data: profileData, error: profileError, status: profileStatus} = await supabase
                     .from('users_profile')
                     .select(`kcal_count, train_count`)
                     .eq('user_id', userData.id) // assuming there is a field 'id' in the users_profile table that corresponds to the user's id
                     .single();
-    
+
                 if (profileError && profileStatus !== 406) {
                     throw profileError;
                 }
-    
+
                 if (profileData) {
                     setKcal(profileData.kcal_count);
                     setAllTrain(profileData.train_count);
@@ -96,6 +96,7 @@ function MainScreen({session}) {
             setLoading(false);
         }
     }
+
     const fetchData = async () => {
         try {
             if (session) {
@@ -114,24 +115,24 @@ function MainScreen({session}) {
         setRefreshing(true);
         fetchData()
         setTimeout(() => {
-          setRefreshing(false);
-        }, 600); 
+            setRefreshing(false);
+        }, 600);
     };
 
     return (
         <View>
             <Main>
-                <ScrollView 
+                <ScrollView
                     showsVerticalScrollIndicator={false}
                     showsHorizontalScrollIndicator={false}
                     refreshControl={
                         <RefreshControl
-                          refreshing={refreshing}
-                          onRefresh={onRefresh}
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
                         />
-                      }
+                    }
                 >
-                    <WelcomeComponent 
+                    <WelcomeComponent
                         session={session}
                         fname={fname}
                         lname={lname}
@@ -141,11 +142,11 @@ function MainScreen({session}) {
                         favex={favex}
                         allTrain={allTrain}
                     />
-                    <TrainingStat/>
+                    <TrainingStat session={session}/>
                     <MuslceTraining/>
                 </ScrollView>
             </Main>
-            <Nav routeName={routeName}/> 
+            <Nav routeName={routeName}/>
         </View>
     )
 }
