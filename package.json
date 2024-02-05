@@ -60,7 +60,9 @@
     "react-native-swiper": "^1.6.0",
     "react-native-swiper-flatlist": "^3.2.3",
     "react-native-url-polyfill": "^2.0.0",
-    "styled-components": "^6.1.1"
+    "styled-components": "^6.1.1",
+    "wrap-ansi": "7.0.0",
+    "wrap-ansi-cjs": "^8.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
