@@ -18,8 +18,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.hulaaaa.rnapp",
       "infoPlist": {
-        "NSCameraUsageDescription": "We need your permission to use your camera",
-        "NSPhotoLibraryUsageDescription": "We need your permission to access your photos"
+        "NSCameraUsageDescription": "We need access to your camera",
+        "NSPhotoLibraryUsageDescription": "We need access to your photo library"
       }
     },
     "android": {

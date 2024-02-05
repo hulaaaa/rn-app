@@ -68,14 +68,14 @@ function TrainingOneDiv({text,time}) {
                     {time} MIN
                 </Text>
             </View>
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 style={{
                     width: "100%",
                     height: "100%"
                 }}
             >
                 <PlaySVG/>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </TextTrainDiv>
     </TrainingOneContainer>
   )

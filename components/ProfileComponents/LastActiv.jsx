@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, ScrollView} from 'react-native';
 import styled from 'styled-components';
 import { supabase } from '../../lib/supabase';
 
@@ -24,6 +24,7 @@ const TextiAct = styled.View`
   padding: 0;
   margin: 0;
   padding-top: 30px;
+  margin-bottom: 110px;
 `;
 
 const ActiveDiv = styled.View`
