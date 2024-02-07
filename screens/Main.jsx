@@ -57,7 +57,7 @@ function MainScreen({session}) {
             setLoading(true);
             if (!session?.user) throw new Error('No user on the session!');
 
-            // First, fetch data from users_user table
+
             const {data: userData, error: userError, status: userStatus} = await supabase
                 .from('users_user')
                 .select(`first_name, last_name, id`)
@@ -72,11 +72,11 @@ function MainScreen({session}) {
                 setFname(userData.first_name);
                 setLname(userData.last_name);
 
-                // Second, fetch data from users_profile table using the user id
+
                 const {data: profileData, error: profileError, status: profileStatus} = await supabase
                     .from('users_profile')
                     .select(`kcal_count, train_count`)
-                    .eq('user_id', userData.id) // assuming there is a field 'id' in the users_profile table that corresponds to the user's id
+                    .eq('user_id', userData.id)
                     .single();
 
                 if (profileError && profileStatus !== 406) {

@@ -1,12 +1,10 @@
-import { useNavigation } from "@react-navigation/native";
-import { useState } from 'react';
-import { supabase } from '../lib/supabase'
-import { SafeAreaView, Text, Image, View,Alert, TextInput,TouchableOpacity } from 'react-native';
+import {useNavigation} from "@react-navigation/native";
+import {useState} from 'react';
+import {supabase} from '../lib/supabase'
+import {Alert, Text, View} from 'react-native';
 import styled from 'styled-components/native';
-import { RulerPicker } from 'react-native-ruler-picker';
-import { launchImageLibrary} from 'react-native-image-picker';
-import { Button } from '@rneui/themed';
-import { ButtonGroup } from '@rneui/themed';
+import {RulerPicker} from 'react-native-ruler-picker';
+import {Button, ButtonGroup} from '@rneui/themed';
 
 
 const Container = styled.View`
@@ -42,9 +40,9 @@ const TextLoginInp = styled.TextInput`
     color: rgba(255, 255, 255, 0.8);
 `
 
-function Reg_info({ session }) {
+function Reg_info({session}) {
     const navigation = useNavigation();
-    // Personal information
+
     const [name, setName] = useState("");
     const [lname, setLname] = useState("");
 
@@ -57,12 +55,12 @@ function Reg_info({ session }) {
     const [loading, setLoading] = useState(false);
 
     async function updateProfile({
-        name,
-        lname,
-        weight,
-        height,
-        gender,
-    }) {
+                                     name,
+                                     lname,
+                                     weight,
+                                     height,
+                                     gender,
+                                 }) {
         try {
             setLoading(true);
             if (!session?.user) throw new Error('No user on the session!')
@@ -77,18 +75,18 @@ function Reg_info({ session }) {
                 is_active: true,
                 email: null
             }
-            const { error } = await supabase.from('users_user').upsert(updates);
+            const {error} = await supabase.from('users_user').upsert(updates);
             if (error) throw error;
             console.log('Profile updated successfully!');
-    
-            // Тепер викличте функцію, яка записує дані у таблицю users_profile
+
+
             await updateProfileDetails({
                 user_id: updates.id,
                 weight,
                 height,
                 gender,
             });
-    
+
             navigation.navigate('Main');
         } catch (error) {
             console.error('Error updating profile:', error.message);
@@ -97,15 +95,15 @@ function Reg_info({ session }) {
             setLoading(false);
         }
     }
-    
+
     async function updateProfileDetails({
-        user_id,
-        weight,
-        height,
-        gender,
-    }) {
+                                            user_id,
+                                            weight,
+                                            height,
+                                            gender,
+                                        }) {
         try {
-            const { data, error } = await supabase
+            const {data, error} = await supabase
                 .from('users_profile')
                 .upsert([
                     {
@@ -115,9 +113,9 @@ function Reg_info({ session }) {
                         gender: gender,
                     }
                 ]);
-    
+
             if (error) throw error;
-    
+
             console.log('Profile details updated successfully!');
         } catch (error) {
             console.error('Error updating profile details:', error.message);
@@ -127,7 +125,7 @@ function Reg_info({ session }) {
 
     return (
         <Container>
-            <Text 
+            <Text
                 style={{
                     fontFamily: "Montserrat700",
                     color: "#FEFFFF",
@@ -136,14 +134,14 @@ function Reg_info({ session }) {
                 Your body
             </Text>
 
-            <Text 
-            style={{
-                fontFamily: "Montserrat300",
-                color: "#D9D9D9",
-                fontSize: 17,
-                marginTop: 20,
-                marginBottom: 15,
-            }}>
+            <Text
+                style={{
+                    fontFamily: "Montserrat300",
+                    color: "#D9D9D9",
+                    fontSize: 17,
+                    marginTop: 20,
+                    marginBottom: 15,
+                }}>
                 Personal Information
             </Text>
             <LoginDiv>
@@ -161,14 +159,14 @@ function Reg_info({ session }) {
 
 
             {/* Gender Text */}
-            <Text 
-            style={{
-                fontFamily: "Montserrat300",
-                color: "#D9D9D9",
-                fontSize: 17,
-                marginTop: 20,
-                marginBottom: 15,
-            }}>
+            <Text
+                style={{
+                    fontFamily: "Montserrat300",
+                    color: "#D9D9D9",
+                    fontSize: 17,
+                    marginTop: 20,
+                    marginBottom: 15,
+                }}>
                 Gender
             </Text>
             {/* Select Gender */}
@@ -215,17 +213,17 @@ function Reg_info({ session }) {
                     }}
                 />
             </View>
-            
-            
+
+
             {/* Weight Text */}
-            <Text 
-            style={{
-                fontFamily: "Montserrat300",
-                color: "#D9D9D9",
-                fontSize: 17,
-                marginTop: 40,
-                marginBottom: 15,
-            }}>
+            <Text
+                style={{
+                    fontFamily: "Montserrat300",
+                    color: "#D9D9D9",
+                    fontSize: 17,
+                    marginTop: 40,
+                    marginBottom: 15,
+                }}>
                 Weight
             </Text>
             {/* Weight Select */}
@@ -255,14 +253,14 @@ function Reg_info({ session }) {
 
 
             {/* Height Text */}
-            <Text 
-            style={{
-                fontFamily: "Montserrat300",
-                color: "#D9D9D9",
-                fontSize: 17,
-                marginTop: 40,
-                marginBottom: 15,
-            }}>
+            <Text
+                style={{
+                    fontFamily: "Montserrat300",
+                    color: "#D9D9D9",
+                    fontSize: 17,
+                    marginTop: 40,
+                    marginBottom: 15,
+                }}>
                 Height
             </Text>
             {/* Height Select */}
@@ -294,13 +292,13 @@ function Reg_info({ session }) {
             </View>
 
             {/* Finish Button */}
-            <ButtonStart disabled={loading} onPress={() => updateProfile({name, lname,weight,height,gender})}>
+            <ButtonStart disabled={loading} onPress={() => updateProfile({name, lname, weight, height, gender})}>
                 <Text
                     style={{
-                    fontSize: 15,
-                    fontFamily: "Montserrat700",
-                    color: "#1D2900",
-                    textAlign: "center"
+                        fontSize: 15,
+                        fontFamily: "Montserrat700",
+                        color: "#1D2900",
+                        textAlign: "center"
                     }}
                 >
                     LET'S GO
@@ -309,5 +307,6 @@ function Reg_info({ session }) {
         </Container>
     )
 }
+
 export default Reg_info;
 

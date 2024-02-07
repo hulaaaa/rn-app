@@ -104,6 +104,7 @@ function TrainingStat({session}) {
                     }}
                 >
                     {dataTrain.length}
+
                 </Text>
             </TextDiv>
         </Container>

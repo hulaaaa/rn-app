@@ -90,7 +90,7 @@ function Allexer({session}) {
 
     const handleRemove = async () => {
         try {
-            await fetchData(); // Оновлюємо дані перед зміною key
+            await fetchData();
             setKey((prevKey) => prevKey + 1);
         } catch (error) {
             console.log(error);
